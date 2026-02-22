@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Campsite Reservation Reminder</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>⛺ Campsite Reservation Reminder</h1>
+    <p class="subtitle">Enter your desired checkout date and platform to get your booking and cancel-buffer reminders.</p>
+
+    <div class="card">
+      <label for="platform">Reservation Platform</label>
+      <select id="platform">
+        <option value="">-- Loading platforms... --</option>
+      </select>
+
+      <label for="checkoutDate">Desired Checkout Date</label>
+      <input type="date" id="checkoutDate" />
+
+      <label for="stayLength">Desired Stay Length (nights)</label>
+      <input type="number" id="stayLength" min="1" max="14" value="4" />
+
+      <button id="calculateBtn" onclick="calculate()">Calculate & Generate Reminders</button>
+    </div>
+
+    <div class="results" id="results" style="display:none;">
+      <h2>Your Reminders</h2>
+
+      <div class="result-block">
+        <h3>📅 Your Stay</h3>
+        <p id="stayInfo"></p>
+      </div>
+
+      <div class="result-block">
+        <h3>🔔 Reminder 1 — Book Your Buffer Block</h3>
+        <p id="bookingInfo"></p>
+        <button onclick="downloadICS('booking')">Download Booking Reminder (.ics)</button>
+      </div>
+
+      <div class="result-block">
+        <h3>✂️ Reminder 2 — Cancel Buffer Dates</h3>
+        <p id="cancelInfo"></p>
+        <button onclick="downloadICS('cancel')">Download Cancel Reminder (.ics)</button>
+      </div>
+
+      <div class="result-block notes">
+        <h3>ℹ️ Platform Notes</h3>
+        <p id="platformNotes"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

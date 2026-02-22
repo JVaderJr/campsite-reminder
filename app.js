@@ -54,18 +54,18 @@ function calculate() {
   }
 
   const rules = platformRules[platformKey];
-  const checkoutDate = new Date(checkoutDateStr + 'T12:00:00'); // noon to avoid timezone issues
+  const checkoutDate = new Date(checkoutDateStr + 'T12:00:00');
 
   // Desired arrival = checkout minus stay length
   const desiredArrival = subtractDays(checkoutDate, stayLength);
 
-  // Buffer block start = checkout minus maxStayDays (earliest bookable arrival that reaches checkout)
+  // Buffer block start = checkout minus maxStayDays
   const bufferStart = subtractDays(checkoutDate, rules.maxStayDays);
 
-  // Booking date = bufferStart minus bookingWindowDays (when this block first becomes available)
+  // Booking date = bufferStart minus bookingWindowDays
   const bookingDate = subtractDays(bufferStart, rules.bookingWindowDays);
 
-  // Cancel date = desired arrival minus bookingWindowDays (when desired arrival opens for booking)
+  // Cancel date = desired arrival minus bookingWindowDays
   const cancelDate = subtractDays(desiredArrival, rules.bookingWindowDays);
 
   // Store for ICS generation
@@ -88,19 +88,18 @@ function calculate() {
 
   document.getElementById('bookingInfo').innerHTML =
     `<strong>Set a reminder for: ${formatDate(bookingDate)} at ${rules.openTime}</strong><br><br>
-     On this date, book a <strong>${rules.maxStayDays}-night buffer block</strong> starting 
+     On this date, book a <strong>${rules.maxStayDays}-night buffer block</strong> starting
      <strong>${formatDate(bufferStart)}</strong> through <strong>${formatDate(checkoutDate)}</strong>.<br><br>
-     This secures your checkout date. You'll cancel the early dates in Reminder 2.`;
+     This secures your checkout date. You will cancel the early dates in Reminder 2.`;
 
   document.getElementById('cancelInfo').innerHTML =
     `<strong>Set a reminder for: ${formatDate(cancelDate)} at ${rules.openTime}</strong><br><br>
-     On this date, your actual arrival date (<strong>${formatDate(desiredArrival)}</strong>) 
-     opens for booking. Log in and <strong>cancel or modify</strong> the buffer dates 
-     (${formatDate(bufferStart)} through ${formatDate(subtractDays(desiredArrival, 1))}) 
-     — keeping only your ${stayLength}-night stay.`;
+     On this date, your actual arrival date (<strong>${formatDate(desiredArrival)}</strong>)
+     opens for booking. Log in and <strong>cancel or modify</strong> the buffer dates
+     (${formatDate(bufferStart)} through ${formatDate(subtractDays(desiredArrival, 1))})
+     - keeping only your ${stayLength}-night stay.`;
 
   document.getElementById('platformNotes').textContent = rules.notes;
-
   document.getElementById('results').style.display = 'flex';
 }
 
@@ -112,15 +111,20 @@ function downloadICS(type) {
 
   if (type === 'booking') {
     reminderDate = d.bookingDate;
-    summary = `BOOK CAMPSITE — ${d.platform.name}`;
-    description = `Book a ${d.platform.maxStayDays}-night buffer block starting ${formatDate(d.bufferStart)} through ${formatDate(d.checkoutDate)} on ${d.platform.url}. Platform opens at ${d.platform.openTime}.`;
+    summary = 'BOOK CAMPSITE - ' + d.platform.name;
+    description = 'Book a ' + d.platform.maxStayDays + '-night buffer block starting '
+      + formatDate(d.bufferStart) + ' through ' + formatDate(d.checkoutDate)
+      + ' on ' + d.platform.url + '. Platform opens at ' + d.platform.openTime + '.';
   } else {
     reminderDate = d.cancelDate;
-    summary = `CANCEL BUFFER DATES — ${d.platform.name}`;
-    description = `Your real arrival (${formatDate(d.desiredArrival)}) is now bookable. Log into ${d.platform.url} and cancel/modify dates ${formatDate(d.bufferStart)} through ${formatDate(subtractDays(d.desiredArrival, 1))} to keep only your ${d.stayLength}-night stay.`;
+    summary = 'CANCEL BUFFER DATES - ' + d.platform.name;
+    description = 'Your real arrival (' + formatDate(d.desiredArrival) + ') is now bookable. '
+      + 'Log into ' + d.platform.url + ' and cancel/modify dates '
+      + formatDate(d.bufferStart) + ' through ' + formatDate(subtractDays(d.desiredArrival, 1))
+      + ' to keep only your ' + d.stayLength + '-night stay.';
   }
 
-  const uid = `campsite-${type}-${Date.now()}@campsitereminder`;
+  const uid = 'campsite-' + type + '-' + Date.now() + '@campsitereminder';
   const dateStr = formatICSDate(reminderDate);
 
   const ics = [
@@ -129,15 +133,15 @@ function downloadICS(type) {
     'PRODID:-//Campsite Reminder//EN',
     'CALSCALE:GREGORIAN',
     'BEGIN:VEVENT',
-    `UID:${uid}`,
-    `DTSTART;VALUE=DATE:${dateStr}`,
-    `DTEND;VALUE=DATE:${dateStr}`,
-    `SUMMARY:${summary}`,
-    `DESCRIPTION:${description.replace(/\n/g, '\\n')}`,
+    'UID:' + uid,
+    'DTSTART;VALUE=DATE:' + dateStr,
+    'DTEND;VALUE=DATE:' + dateStr,
+    'SUMMARY:' + summary,
+    'DESCRIPTION:' + description.replace(/\n/g, '\\n'),
     'BEGIN:VALARM',
     'TRIGGER:-PT0S',
     'ACTION:DISPLAY',
-    `DESCRIPTION:${summary}`,
+    'DESCRIPTION:' + summary,
     'END:VALARM',
     'END:VEVENT',
     'END:VCALENDAR'
@@ -147,10 +151,10 @@ function downloadICS(type) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `campsite-${type}-reminder.ics`;
+  a.download = 'campsite-' + type + '-reminder.ics';
   a.click();
   URL.revokeObjectURL(url);
 }
 
 // Initialize
-loadPlatforms
+loadPlatforms();

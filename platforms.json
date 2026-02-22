@@ -1,0 +1,35 @@
+{
+  "reserveohio": {
+    "name": "ReserveOhio (Ohio State Parks)",
+    "url": "https://reserveohio.com",
+    "bookingWindowDays": 183,
+    "maxStayDays": 14,
+    "minStayDays": 2,
+    "peakMinStayDays": 3,
+    "openTime": "7:00 AM ET",
+    "cancellationFreeWindowDays": 31,
+    "notes": "Book opens exactly 6 months (183 days) before arrival at 7 AM ET. Max 14 nights in any 30-day period. Peak holidays (Memorial Day, July 4th, Labor Day) require 3-night minimum. One free modification; $6 fee after."
+  },
+  "recreation_gov": {
+    "name": "Recreation.gov (Federal/National Parks)",
+    "url": "https://recreation.gov",
+    "bookingWindowDays": 180,
+    "maxStayDays": 14,
+    "minStayDays": 1,
+    "peakMinStayDays": 2,
+    "openTime": "10:00 AM ET",
+    "cancellationFreeWindowDays": 14,
+    "notes": "Book opens exactly 6 months (180 days) before arrival at 10 AM ET. Cancellation fee of $10 within 14 days."
+  },
+  "reserveamerica": {
+    "name": "ReserveAmerica (State Parks - Various)",
+    "url": "https://reserveamerica.com",
+    "bookingWindowDays": 180,
+    "maxStayDays": 14,
+    "minStayDays": 1,
+    "peakMinStayDays": 2,
+    "openTime": "8:00 AM ET",
+    "cancellationFreeWindowDays": 2,
+    "notes": "Rules vary by state. Default is 6 months. Check your specific state park system for overrides."
+  }
+}

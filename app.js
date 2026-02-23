@@ -105,3 +105,46 @@ function calculate() {
 
   document.getElementById('platformNotes').textContent = rules.notes;
   document.getElementById('results').style.display = 'flex';
+}
+
+function downloadICS(type) {
+  const d = currentCalcData;
+  if (!d.bookingDate) return;
+
+  let reminderDate, summary, description;
+
+  if (type === 'booking') {
+    reminderDate = d.bookingDate;
+    summary = 'Campsite Booking Opens';
+    description = 'Book your ' + d.rules.maxStayDays + '-night buffer block starting ' +
+      formatDate(d.bufferStart) + ' through ' + formatDate(d.checkoutDate) + '. ' +
+      'This secures your checkout date. Cancel early dates after Reminder 2.';
+  } else {
+    reminderDate = d.cancelDate;
+    summary = 'Campsite Cancel/Modify Buffer';
+    description = 'Cancel buffer dates ' + formatDate(d.bufferStart) + ' through ' +
+      formatDate(d.checkoutDate) + '. Keep your ' + d.stayLength + '-night stay.';
+  }
+
+  const icsContent = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'BEGIN:VEVENT',
+    'DTSTART:' + formatICSDate(reminderDate),
+    'DTEND:' + formatICSDate(addDays(reminderDate, 1)),
+    'SUMMARY:' + summary,
+    'DESCRIPTION:' + description,
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  const blob = new Blob([icsContent], { type: 'text/calendar' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = type + '-reminder.ics';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.addEventListener('DOMContentLoaded', loadPlatforms);

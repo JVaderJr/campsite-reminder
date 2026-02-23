@@ -49,7 +49,7 @@ function formatDate(date) {
 }
 
 function formatICSDate(date) {
-  return date.toISOString().replace(/[-:]/g, '').split('T')[0];
+  return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
 }
 
 function calculate() {
@@ -57,28 +57,26 @@ function calculate() {
   const checkoutDateStr = document.getElementById('checkoutDate').value;
   const stayLength = parseInt(document.getElementById('stayLength').value);
 
-  if (!platformKey || !checkoutDateStr || !stayLength) {
+  if (!platformKey || !checkoutDateStr || isNaN(stayLength)) {
     alert('Please fill in all fields.');
     return;
   }
 
   const rules = platformRules[platformKey];
   const checkoutDate = new Date(checkoutDateStr + 'T12:00:00');
-
   const desiredArrival = subtractDays(checkoutDate, stayLength);
-  const bufferStart = subtractDays(checkoutDate, rules.maxStayDays);
-  const bookingDate = getBookingOpenDate(bufferStart, rules);
+  const bookingDate = getBookingOpenDate(desiredArrival, rules);
+  const bufferStart = addDays(desiredArrival, 1);
   const cancelDate = getBookingOpenDate(desiredArrival, rules);
 
   currentCalcData = {
-    platform: rules,
-    checkoutDate,
-    desiredArrival,
-    bufferStart,
     bookingDate,
     cancelDate,
+    bufferStart,
+    checkoutDate,
+    desiredArrival,
     stayLength,
-    platformKey
+    rules
   };
 
   document.getElementById('stayInfo').innerHTML =
@@ -97,7 +95,7 @@ function calculate() {
     'On this date, your actual arrival date (<strong>' + formatDate(desiredArrival) + '</strong>) ' +
     'opens for booking. Log in and <strong>cancel or modify</strong> the buffer dates ' +
     '(' + formatDate(bufferStart) + ' through ' + formatDate(subtractDays(desiredArrival, 1)) + ') ' +
-    '- keeping only your ' + stayLength + '-night stay.';
+    '– keeping only your ' + stayLength + '-night stay.';
 
   document.getElementById('platformNotes').textContent = rules.notes;
   document.getElementById('results').style.display = 'flex';
@@ -109,4 +107,35 @@ function downloadICS(type) {
 
   let reminderDate, summary, description;
 
-  if (type ===
+  if (type === 'booking') {
+    reminderDate = d.bookingDate;
+    summary = 'Campsite Booking Opens';
+    description = 'Book your ' + d.rules.maxStayDays + '-night buffer block starting ' + formatDate(d.bufferStart) + ' through ' + formatDate(d.checkoutDate) + '.';
+  } else {
+    reminderDate = d.cancelDate;
+    summary = 'Campsite Cancel/Modify Buffer';
+    description = 'Cancel buffer dates ' + formatDate(d.bufferStart) + ' through ' + formatDate(subtractDays(d.desiredArrival, 1)) + '. Keep your ' + d.stayLength + '-night stay.';
+  }
+
+  const icsContent = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'BEGIN:VEVENT',
+    'DTSTART:' + formatICSDate(reminderDate),
+    'DTEND:' + formatICSDate(addDays(reminderDate, 1)),
+    'SUMMARY:' + summary,
+    'DESCRIPTION:' + description,
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  const blob = new Blob([icsContent], { type: 'text/calendar' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = type + '-reminder.ics';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.addEventListener('DOMContentLoaded', loadPlatforms);

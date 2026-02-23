@@ -66,7 +66,7 @@ function calculate() {
   const checkoutDate = new Date(checkoutDateStr + 'T12:00:00');
   const desiredArrival = subtractDays(checkoutDate, stayLength);
   const bookingDate = getBookingOpenDate(desiredArrival, rules);
-  const bufferStart = addDays(desiredArrival, 1);
+  const bufferStart = desiredArrival;
   const cancelDate = getBookingOpenDate(desiredArrival, rules);
 
   currentCalcData = {

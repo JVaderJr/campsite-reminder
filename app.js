@@ -94,7 +94,7 @@ function calculate() {
     '<strong>Set a reminder for: ' + formatDate(cancelDate) + ' at ' + rules.openTime + '</strong><br><br>' +
     'On this date, your actual arrival date (<strong>' + formatDate(desiredArrival) + '</strong>) ' +
     'opens for booking. Log in and <strong>cancel or modify</strong> the buffer dates ' +
-    '(' + formatDate(bufferStart) + ' through ' + formatDate(subtractDays(desiredArrival, 1)) + ') ' +
+    '(' + formatDate(bufferStart) + ' through ' + formatDate(checkoutDate) + ') ' +
     '– keeping only your ' + stayLength + '-night stay.';
 
   document.getElementById('platformNotes').textContent = rules.notes;
@@ -114,8 +114,7 @@ function downloadICS(type) {
   } else {
     reminderDate = d.cancelDate;
     summary = 'Campsite Cancel/Modify Buffer';
-    description = 'Cancel buffer dates ' + formatDate(d.bufferStart) + ' through ' + formatDate(subtractDays(d.desiredArrival, 1)) + '. Keep your ' + d.stayLength + '-night stay.';
-  }
+    description = 'Cancel buffer dates ' + formatDate(d.bufferStart) + ' through ' + formatDate(d.checkoutDate) + '. Keep yo...
 
   const icsContent = [
     'BEGIN:VCALENDAR',
